@@ -1,5 +1,4 @@
 -- +goose Up
-
 CREATE TYPE user_type AS ENUM ('user','admin');
 
 CREATE TABLE users (
@@ -12,6 +11,10 @@ CREATE TABLE users (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+
+CREATE INDEX idx_user_type ON users(type);
+CREATE INDEX idx_user_email ON users(email);
+
 CREATE TRIGGER trg_users_updated_at
 BEFORE UPDATE ON users
 FOR EACH ROW
@@ -19,5 +22,7 @@ EXECUTE FUNCTION set_updated_at();
 
 -- +goose Down
 DROP TABLE users;
+DROP INDEX IF EXISTS idx_user_type;
+DROP INDEX IF EXISTS idx_user_email;
+DROP TYPE user_type;
 DROP TRIGGER IF EXISTS trg_users_updated_at ON users;
-
